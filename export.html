@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Trust Game - Data Export</title>
+	<link rel="stylesheet" type="text/css" href="css/slides.css">
+	<style>
+		body {
+			font-family: sans-serif;
+			padding: 20px;
+			max-width: 800px;
+			margin: 0 auto;
+		}
+		.button {
+			background: #2C59B1;
+			color: #fff;
+			border: none;
+			padding: 10px 20px;
+			font-size: 16px;
+			border-radius: 5px;
+			cursor: pointer;
+			margin: 10px 0;
+		}
+		.button:hover {
+			background: #1A4292;
+		}
+		textarea {
+			width: 100%;
+			height: 300px;
+			margin: 20px 0;
+			font-family: monospace;
+		}
+		#sessions {
+			margin: 20px 0;
+		}
+	</style>
+</head>
+<body>
+	<h1>Trust Game - Data Export</h1>
+	
+	<div id="sessions">
+		<h2>Recorded Sessions</h2>
+		<div id="session-list">Loading...</div>
+	</div>
+	
+	<div>
+		<button id="export-csv" class="button">Export All as CSV</button>
+		<button id="clear-data" class="button">Clear All Data</button>
+		<a id="download-link" style="display:none"></a>
+	</div>
+	
+	<div>
+		<textarea id="export-data" readonly></textarea>
+	</div>
+	
+	<div>
+		<a href="index.html" class="button">Back to Game</a>
+	</div>
+	
+	<script src="js/lib/dataRecorder.js"></script>
+	<script>
+		// Load all sessions
+		function refreshSessionList() {
+			var sessions = DataRecorder.listSessions();
+			var sessionList = document.getElementById('session-list');
+			
+			if (sessions.length === 0) {
+				sessionList.innerHTML = '<p>No sessions found.</p>';
+				return;
+			}
+			
+			var html = '<ul>';
+			sessions.forEach(function(id) {
+				var data = DataRecorder.loadSessionData(id);
+				var date = new Date(data.timestamp);
+				html += '<li>Participant: <strong>' + id + '</strong> - ' + 
+					date.toLocaleString() + ' (' + data.rounds.length + ' rounds)</li>';
+			});
+			html += '</ul>';
+			
+			sessionList.innerHTML = html;
+		}
+		
+		// Export as CSV
+		document.getElementById('export-csv').addEventListener('click', function() {
+			var csv = DataRecorder.exportAllAsCSV();
+			document.getElementById('export-data').value = csv;
+			
+			// Create download link
+			var blob = new Blob([csv], { type: 'text/csv' });
+			var url = URL.createObjectURL(blob);
+			var a = document.getElementById('download-link');
+			a.href = url;
+			a.download = 'trust_game_data_' + new Date().toISOString().slice(0,10) + '.csv';
+			a.click();
+		});
+		
+		// Clear all data
+		document.getElementById('clear-data').addEventListener('click', function() {
+			if (confirm('Are you sure? This will delete ALL recorded data.')) {
+				DataRecorder.clearAllData();
+				document.getElementById('export-data').value = '';
+				refreshSessionList();
+			}
+		});
+		
+		// Initialize
+		refreshSessionList();
+	</script>
+</body>
+</html>
