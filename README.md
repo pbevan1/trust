@@ -1,26 +1,37 @@
-# How to run this as an experiment
+#	FOR ALEX: How to run this as an experiment
 
-  Clone the repository:
+Clone the repository (enter this in your terminal where you want the project to be saved):
   ```bash
     git clone https://github.com/pbevan1/trust
-    cd trust
 ```
 
-  To run locally:
+Move into the frehsly cloned project directory:
+  ```bash
+    cd trust
+  ```
+
+First run:
   ```bash
   npx http-server
   ```
 
-  For each participant, open [http://localhost:8080/participant.html](http://localhost:8080/participant.html) in your browser to start a new session.
+Then, for each participant, open [http://localhost:8080/participant.html](http://localhost:8080/participant.html) in your browser to start a new session.
 
-  The workflow is:
+Steps:
   1. Enter participant ID on the initial screen
   2. Play the trust game
   3. All decisions are automatically recorded
   4. Access http://localhost:8080/export.html to export data as CSV
 
 
-# ORIGINAL README:
+---
+---
+---
+---
+---
+---
+
+#	ORIGINAL README
 
 !["The Evolution of Trust"](https://i.imgur.com/kde760y.png)
 
