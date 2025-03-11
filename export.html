@@ -83,8 +83,20 @@
 		
 		// Export as CSV
 		document.getElementById('export-csv').addEventListener('click', function() {
+			// Debug stored data
+			console.log("Sessions:", DataRecorder.listSessions());
+			var sessions = DataRecorder.listSessions();
+			if (sessions.length > 0) {
+				var firstSession = DataRecorder.loadSessionData(sessions[0]);
+				console.log("Sample session data:", firstSession);
+				if (firstSession && firstSession.rounds && firstSession.rounds.length > 0) {
+					console.log("Sample round data:", firstSession.rounds[0]);
+				}
+			}
+			
 			var csv = DataRecorder.exportAllAsCSV();
 			document.getElementById('export-data').value = csv;
+			console.log("CSV generated:", csv.substring(0, 500));
 			
 			// Create download link
 			var blob = new Blob([csv], { type: 'text/csv' });

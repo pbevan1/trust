@@ -1,5 +1,6 @@
 /**
  * Data Recorder - Captures participant interactions
+ * Simplified version for the trust game
  */
 (function(exports){
 
@@ -28,14 +29,23 @@
 	exports.recordRound = function(playerMove, opponentMove, payoffs) {
 		if(!participantID) return; // Don't record if no participant ID
 		
-		sessionData.rounds.push({
+		// Safety check for payoffs
+		if (!payoffs || typeof payoffs !== 'object') {
+			payoffs = [0, 0]; // Default if missing
+		}
+		
+		var roundData = {
 			round: sessionData.rounds.length + 1,
 			timestamp: Date.now(),
-			playerMove: playerMove,
-			opponentMove: opponentMove,
+			playerMove: playerMove || "unknown",
+			opponentMove: opponentMove || "unknown",
 			playerPayoff: payoffs[0],
 			opponentPayoff: payoffs[1]
-		});
+		};
+		
+		console.log("Recording data:", roundData);
+		
+		sessionData.rounds.push(roundData);
 		
 		// Save after each round
 		saveSessionData();
@@ -51,33 +61,51 @@
 		return JSON.stringify(sessionData, null, 2);
 	};
 	
-	// Export all data as CSV
+	// FIXED: Hard-code the correct CSV structure
 	exports.exportAllAsCSV = function() {
-		var sessions = exports.listSessions();
-		var allData = [];
-		
-		// Header row
-		var csv = "participant_id,round,timestamp,player_move,opponent_move,player_payoff,opponent_payoff\n";
-		
-		// Get data from all sessions
-		sessions.forEach(function(id) {
-			var sessionData = exports.loadSessionData(id);
-			if(sessionData && sessionData.rounds) {
-				sessionData.rounds.forEach(function(round) {
-					csv += [
-						sessionData.id,
-						round.round,
-						round.timestamp,
-						round.playerMove,
-						round.opponentMove,
-						round.playerPayoff,
-						round.opponentPayoff
-					].join(",") + "\n";
-				});
-			}
-		});
-		
-		return csv;
+		try {
+			// Create CSV header
+			var csv = "participant_id,round,timestamp,player_move,opponent_move,player_payoff,opponent_payoff\n";
+			
+			// Get all participant IDs
+			var sessions = exports.listSessions();
+			
+			// For each participant
+			sessions.forEach(function(id) {
+				try {
+					// Get their data
+					var data = localStorage.getItem('trust_session_' + id);
+					if (!data) return;
+					
+					var sessionData = JSON.parse(data);
+					if (!sessionData || !sessionData.rounds) return;
+					
+					// For each round they played
+					sessionData.rounds.forEach(function(round) {
+						// Format each field, handling nulls/undefined
+						var line = [
+							id || "",
+							round.round || "",
+							round.timestamp || "",
+							round.playerMove || "unknown",
+							round.opponentMove || "unknown",
+							round.playerPayoff !== undefined ? round.playerPayoff : "",
+							round.opponentPayoff !== undefined ? round.opponentPayoff : ""
+						].join(",");
+						
+						// Add to CSV
+						csv += line + "\n";
+					});
+				} catch (err) {
+					console.error("Error processing participant data:", id, err);
+				}
+			});
+			
+			return csv;
+		} catch (err) {
+			console.error("Error generating CSV:", err);
+			return "Error generating CSV";
+		}
 	};
 	
 	// Save data to localStorage

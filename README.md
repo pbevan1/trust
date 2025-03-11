@@ -1,3 +1,27 @@
+# How to run this as an experiment
+
+  Clone the repository:
+  ```bash
+    git clone https://github.com/pbevan1/trust
+    cd trust
+```
+
+  To run locally:
+  ```bash
+  npx http-server
+  ```
+
+  For each participant, open [http://localhost:8080/participant.html](http://localhost:8080/participant.html) in your browser to start a new session.
+
+  The workflow is:
+  1. Enter participant ID on the initial screen
+  2. Play the trust game
+  3. All decisions are automatically recorded
+  4. Access http://localhost:8080/export.html to export data as CSV
+
+
+# ORIGINAL README:
+
 !["The Evolution of Trust"](https://i.imgur.com/kde760y.png)
 
 #	PLAY IT HERE: [http://ncase.me/trust/](http://ncase.me/trust/)

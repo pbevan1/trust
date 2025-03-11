@@ -142,32 +142,9 @@ function Iterated(config){
 		var A = yourMove;
 		if(yourMove=="TRIP") A=PD.CHEAT;
 		var B = self.opponentLogic.play();
-		
-		// Store last move for data recording
-		self.opponentLogic.lastMove = B;
 
 		// Get payoffs
 		var payoffs = PD.getPayoffs(A,B);
-		
-		// DIRECT DATA RECORDING - Record data immediately when we have all the values
-		if(window.DataRecorder) {
-			// Standardize the display move
-			var displayMove = yourMove;
-			if(displayMove === "TRIP") displayMove = PD.CHEAT + " (TRIP)";
-			
-			console.log("DIRECT RECORDING from Iterated.js:", {
-				playerMove: displayMove,
-				opponentMove: B,
-				payoffs: payoffs
-			});
-			
-			// Actually record the data
-			DataRecorder.recordRound(
-				displayMove,
-				B,
-				payoffs
-			);
-		}
 
 		// ANIMATE the moves: betrayal or what?
 		self.playerA.TRIP = (yourMove=="TRIP");
@@ -647,3 +624,4 @@ function IteratedPeep(config){
 
 
 }
+
